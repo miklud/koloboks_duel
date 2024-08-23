@@ -21,7 +21,8 @@ export function animate(ctx, circlesArr, maxX, maxY, dispatcher) {
     right: 0,
   };
 
-  let inPause = undefined;
+  let inPause = undefined; // {}
+  let tempStop = undefined; // {dy: number, id: "right" | "left"}
 
   function _animateLoop() {
     ctx.clearRect(0, 0, maxX, maxY);
@@ -62,9 +63,30 @@ export function animate(ctx, circlesArr, maxX, maxY, dispatcher) {
       // Наткнулся на мышь?
       const mouseY = Math.pow(dispatcher.mousePosition.y - circle.y, 2);
       const mouseX = Math.pow(dispatcher.mousePosition.x - circle.x, 2);
-      if (Math.sqrt(mouseX + mouseY) <= KOLOBOK_RADIUS) {
+      const sqrtDistance = Math.sqrt(mouseX + mouseY);
+
+      // Тогда меняем направление
+      if (
+        sqrtDistance <= KOLOBOK_RADIUS + 5 &&
+        sqrtDistance >= KOLOBOK_RADIUS
+      ) {
         circle.changeDirection();
       }
+
+      // А если мышь внутри колобка, то останавливаем колобка
+      if (sqrtDistance < KOLOBOK_RADIUS) {
+        if (!tempStop) {
+          tempStop = { dy: 0, id: "" };
+          tempStop.dy = circle.dy;
+          tempStop.id = circle.id;
+          circle.dy = 0;
+        }
+      } else if (tempStop && tempStop.id === circle.id) {
+        // Мышь ушла от колобка
+        circle.dy = tempStop.dy;
+        tempStop = undefined;
+      }
+      //<< Столкновение закончилось
 
       // Клик на Canvas?
       if (dispatcher.isClick) {
@@ -183,7 +205,6 @@ export function animate(ctx, circlesArr, maxX, maxY, dispatcher) {
           const scoresLeft = result.payload.scores.left;
           const scoresRight = result.payload.scores.right;
           if (scoresLeft !== scores.left || scoresRight !== scores.right) {
-            // fnChangeScores({ left: scoresLeft, right: scoresRight });
             dispatcher.fnSetScores({ left: scoresLeft, right: scoresRight });
           }
           scores.left = scoresLeft;
@@ -203,10 +224,6 @@ export function animate(ctx, circlesArr, maxX, maxY, dispatcher) {
     // Loop
     // ---
     window.requestAnimationFrame(_animateLoop);
-    // window.setTimeout(() => {
-    //   // if (isDebug) debugger;
-    //   _animateLoop();
-    // }, 1 * 1000);
   }
   return _animateLoop;
 } //<<
