@@ -25,7 +25,7 @@ const KolobokVelocitySlider = function KolobokVelocitySlider(props) {
     window.setTimeout(() => {
       dispatcher.fnCirlceVelocity({
         circleID: props.whois,
-        newCircleVelocity: val,
+        newCircleVelocity: e.target.value,
       });
     }, 200);
   };

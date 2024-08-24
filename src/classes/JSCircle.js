@@ -43,7 +43,6 @@ export default class JSCircle {
 
   setPause() {
     this.dy = 0;
-    // this.delay = Number.MAX_SAFE_INTEGER;
     this.delay = Number.POSITIVE_INFINITY;
   }
 
