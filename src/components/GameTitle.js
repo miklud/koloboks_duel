@@ -93,6 +93,7 @@ const StyledGameTitle = styled(GameTitle)((props) => {
       display: "flex",
       justifyContent: "center",
       gap: "0.5em",
+      fontSize: "1.2em",
     },
 
     "& .GameTitle_Icon": {

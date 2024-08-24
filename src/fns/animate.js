@@ -21,7 +21,7 @@ export function animate(ctx, circlesArr, maxX, maxY, dispatcher) {
     right: 0,
   };
 
-  let inPause = undefined; // {}
+  let inPause = undefined; // {dy: number, delay: number}
   let tempStop = undefined; // {dy: number, id: "right" | "left"}
 
   function _animateLoop() {
@@ -31,6 +31,11 @@ export function animate(ctx, circlesArr, maxX, maxY, dispatcher) {
       if (dispatcher.isPause) {
         if (!inPause) inPause = { bullets: {} };
         if (!inPause[circle.id]) {
+          if (tempStop && tempStop.id === circle.id) {
+            circle.dy = tempStop.dy;
+            tempStop = undefined;
+          }
+
           inPause = Object.assign(inPause, {
             [circle.id]: {
               dy: circle.dy,
@@ -67,7 +72,7 @@ export function animate(ctx, circlesArr, maxX, maxY, dispatcher) {
 
       // Тогда меняем направление
       if (
-        sqrtDistance <= KOLOBOK_RADIUS + 5 &&
+        sqrtDistance <= KOLOBOK_RADIUS + 10 &&
         sqrtDistance >= KOLOBOK_RADIUS
       ) {
         circle.changeDirection();

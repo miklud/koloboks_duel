@@ -75,6 +75,12 @@ const Styled = styled(KolobokVelocitySlider)((props) => {
       fontSize: "4em",
       lineHeight: "1.4",
       letterSpacing: "-.07em",
+
+      "@media screen and (max-height: 1080px)": {
+        fontSize: "3em",
+        marginTop: "0.3em",
+        marginBottom: "0.3em",
+      },
     },
 
     "& .KVS_input": {

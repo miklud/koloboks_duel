@@ -58,7 +58,7 @@ const ColorPicker = function ColorPicker(props) {
                 >
                   <p>Для {kolobokName}</p>
                 </div>
-                <label>Выберите цвет:</label>
+                <label>Выберите другой:</label>
                 <input
                   type="color"
                   value={color || dispatcher.circleClickedCurrentColor}

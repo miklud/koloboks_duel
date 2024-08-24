@@ -72,6 +72,10 @@ const StyledScoreboard = styled(Scoreboard)((props) => {
   return {
     backgroundColor: "#d4a373",
     color: "#343a40",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
 
     "& .ScoreboardLeft, & .ScoreboardRight": {
       display: "flex",
@@ -86,7 +90,9 @@ const StyledScoreboard = styled(Scoreboard)((props) => {
     },
 
     "& .ScoreboardHeaderMain": {
-      marginTop: "0.7em",
+      "@media screen and (max-height: 768px)": {
+        marginBottom: "0.5em",
+      },
     },
 
     "& .ScoreboardHeaderScores": {
