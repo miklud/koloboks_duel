@@ -19,6 +19,7 @@ export default class JSCircle {
   // id: "left" | "right"
   static velocities = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   static bulletDelays = [1.5, 1, 0.7, 0.4, 0.2];
+  static originRadius = 30;
 
   constructor({ ctx, radius, id, maxX, maxY }) {
     this.ctx = ctx;
@@ -65,17 +66,15 @@ export default class JSCircle {
 
   getShot() {
     this.color = this.id === "left" ? SHOT_COLORS[0] : SHOT_COLORS[1];
-    const originRadius = this.radius;
-    // this.radius = originRadius * 1.2;
-    this.radius = originRadius * 0.3333;
+    this.radius = JSCircle.originRadius * 0.3333;
     new Promise((resolve) => {
       window.setTimeout(() => {
-        this.radius = originRadius * 1.3333;
+        this.radius = JSCircle.originRadius * 1.3333;
         resolve();
       }, 50);
     }).then(() => {
       window.setTimeout(() => {
-        this.radius = originRadius;
+        this.radius = JSCircle.originRadius;
         this.color = this.id === "left" ? COLORS[0] : COLORS[1];
       }, 50);
     });
