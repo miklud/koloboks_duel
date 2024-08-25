@@ -10,6 +10,7 @@ const MARGIN = 10;
 const SEC = 1000;
 const DEFAULT = 5;
 const COLORS = ["#b46034", "#3fa6cd"];
+const SHOT_COLORS = ["#A9B535", "#BB3FCC"];
 
 // ===
 // main
@@ -60,6 +61,24 @@ export default class JSCircle {
     const delaysArr = JSCircle.bulletDelays;
     if (num < 1 || num > 5) throw new Error("Bullets Frequency not correct");
     this.delay = delaysArr[num - 1] * SEC;
+  }
+
+  getShot() {
+    this.color = this.id === "left" ? SHOT_COLORS[0] : SHOT_COLORS[1];
+    const originRadius = this.radius;
+    // this.radius = originRadius * 1.2;
+    this.radius = originRadius * 0.3333;
+    new Promise((resolve) => {
+      window.setTimeout(() => {
+        this.radius = originRadius * 1.3333;
+        resolve();
+      }, 50);
+    }).then(() => {
+      window.setTimeout(() => {
+        this.radius = originRadius;
+        this.color = this.id === "left" ? COLORS[0] : COLORS[1];
+      }, 50);
+    });
   }
 
   changeDirection() {

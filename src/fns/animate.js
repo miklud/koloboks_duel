@@ -19,6 +19,9 @@ export function animate(ctx, circlesArr, maxX, maxY, dispatcher) {
   const scores = {
     left: 0,
     right: 0,
+    scoresChanged: false,
+    leftChanged: false,
+    rightChanged: false,
   };
 
   let inPause = undefined; // {dy: number, delay: number}
@@ -54,6 +57,21 @@ export function animate(ctx, circlesArr, maxX, maxY, dispatcher) {
         ) {
           circle.setBulletColor(dispatcher.circleClickedCurrentColor);
           dispatcher.fnSetIsColorChanged(false);
+        }
+      }
+
+      // В колобков попали? Тогда меняем цвет и радиус
+      if (scores.scoresChanged) {
+        if (scores.leftChanged && circle.id === "right") {
+          circle.getShot();
+          scores.leftChanged = false;
+          scores.scoresChanged = false;
+        }
+
+        if (scores.rightChanged && circle.id === "left") {
+          circle.getShot();
+          scores.leftChanged = false;
+          scores.scoresChanged = false;
         }
       }
 
@@ -209,8 +227,12 @@ export function animate(ctx, circlesArr, maxX, maxY, dispatcher) {
           bulletArrsIDs = result.payload.bulletArrsIDs;
           const scoresLeft = result.payload.scores.left;
           const scoresRight = result.payload.scores.right;
-          if (scoresLeft !== scores.left || scoresRight !== scores.right) {
+          scores.leftChanged = scoresLeft !== scores.left;
+          scores.rightChanged = scoresRight !== scores.right;
+          // if (scoresLeft !== scores.left || scoresRight !== scores.right) {
+          if (scores.leftChanged || scores.rightChanged) {
             dispatcher.fnSetScores({ left: scoresLeft, right: scoresRight });
+            scores.scoresChanged = true;
           }
           scores.left = scoresLeft;
           scores.right = scoresRight;
