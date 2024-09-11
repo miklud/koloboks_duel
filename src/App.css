@@ -1,6 +1,6 @@
 .App {
-  height: calc(100vh - var(--margin-standard) * 1.1);
-  width: calc(100vw - var(--margin-standard) * 1.1);
+  height: calc(100vh - var(--margin-standard) * var(--zooming-kef));
+  width: calc(100vw - var(--margin-standard) * var(--zooming-kef));
   padding: var(--margin-min);
   background-color: white;
 }

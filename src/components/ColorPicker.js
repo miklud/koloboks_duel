@@ -6,6 +6,7 @@ import styled from "@emotion/styled";
 import { IoMdClose } from "react-icons/io";
 import Header from "./Header";
 import { useMainContext } from "../context/ContextProvider";
+import { fnSetIsColorChanged } from "../lib";
 
 // ===
 // main
@@ -14,7 +15,7 @@ const ColorPicker = function ColorPicker(props) {
   // ---
   // context
   // ---
-  const { dispatcher, isColorPickerOpen } = useMainContext();
+  const { dispatcher, isColorPickerOpen, ctxUtils } = useMainContext();
 
   // ---
   // local state
@@ -28,7 +29,8 @@ const ColorPicker = function ColorPicker(props) {
   // ---
   const handleColorChange = (event) => {
     setColor(event.target.value);
-    dispatcher.fnSetIsColorChanged(true, event.target.value);
+    // dispatcher.fnSetIsColorChanged(true, event.target.value);
+    fnSetIsColorChanged(dispatcher, true, event.target.value);
   };
 
   // ---
@@ -67,7 +69,8 @@ const ColorPicker = function ColorPicker(props) {
               </div>
               <button
                 className="ColorPickerCloseButton"
-                onClick={dispatcher.fnCloseColorPicker}
+                // onClick={dispatcher.fnCloseColorPicker}
+                onClick={ctxUtils.uColorPickerClose}
               >
                 <IoMdClose />
               </button>

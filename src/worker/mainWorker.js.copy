@@ -11,18 +11,18 @@ export function mainWorker() {
 
     const dataToExport = { bulletArrsIDs: [], scores: { left: 0, right: 0 } };
 
-    const bulletArrs_0 = data.payload.bulletArrs.slice();
+    let bulletArrs = data.payload.bulletArrs;
     const BULLET_RADIUS = data.payload.BULLET_RADIUS;
     const KOLOBOK_RADIUS = data.payload.KOLOBOK_RADIUS;
 
     const maxX = data.payload.maxX;
     const maxY = data.payload.maxY;
-    const kolobokLeftXY = data.payload.kolobokLeftXY.slice();
-    const kolobokRightXY = data.payload.kolobokRightXY.slice();
-    const scores = Object.assign({}, data.payload.scores);
+    const kolobokLeftXY = data.payload.kolobokLeftXY;
+    const kolobokRightXY = data.payload.kolobokRightXY;
+    const scores = data.payload.scores;
 
     // Убираем все bullets за границами canvas
-    const bulletArrs_1 = bulletArrs_0.reduce((newBArr, bullet) => {
+    bulletArrs = bulletArrs.reduce((newBArr, bullet) => {
       const bulletFlag =
         bullet.x < 0 || bullet.x > maxX || bullet.y < 0 || bullet.y > maxY
           ? false
@@ -31,12 +31,16 @@ export function mainWorker() {
         newBArr.push(bullet);
       }
 
+      // ---
+      // TODO
+      // получить массив id для bullets, которые нужно удалить
+      // ---
       return newBArr;
     }, []);
     //<< Убрали
 
     // Убираем все bullets, которые врезались друг в друга
-    const bulletArrsX = bulletArrs_1.map((bullet) => bullet.x).sort();
+    const bulletArrsX = bulletArrs.map((bullet) => bullet.x).sort();
     const xCollision = [];
 
     for (let i = 0, len = bulletArrsX.length, last = len - 1; i < len; i++) {
@@ -53,8 +57,8 @@ export function mainWorker() {
     const elementsToKill = new Set();
 
     xCollision.forEach((tupple, inx) => {
-      const x1Bullets = bulletArrs_1.filter((bullet) => bullet.x === tupple[0]);
-      const x2Bullets = bulletArrs_1.filter((bullet) => bullet.x === tupple[1]);
+      const x1Bullets = bulletArrs.filter((bullet) => bullet.x === tupple[0]);
+      const x2Bullets = bulletArrs.filter((bullet) => bullet.x === tupple[1]);
 
       x1Bullets.forEach((bullet1) => {
         let isKilled = false;
@@ -76,17 +80,19 @@ export function mainWorker() {
       });
     });
 
-    const bulletArrs_2 = bulletArrs_1.filter(
+    // ---
+    // TODO
+    // получить массив id для bullets, которые нужно удалить
+    // ---
+    bulletArrs = bulletArrs.filter(
       (bullet) => !elementsToKill.has(bullet.bulletID)
     );
     //<< Убрали
 
     // Ищем попадания в Колобков
     const idBulletsToKill = [];
-    const bulletsLeftArr = bulletArrs_2.filter(
-      (bullet) => bullet.id === "left"
-    );
-    const bulletsRightArr = bulletArrs_2.filter(
+    const bulletsLeftArr = bulletArrs.filter((bullet) => bullet.id === "left");
+    const bulletsRightArr = bulletArrs.filter(
       (bullet) => bullet.id === "right"
     );
 
@@ -118,15 +124,36 @@ export function mainWorker() {
       }
     });
     //<< Нашли
+    // ---
+    // TODO
+    // получить массив id для bullets, которые нужно удалить
+    // ---
 
     // Убираем bullets, попавшие в Колобков
-    const bulletArrs_3 = bulletArrs_2.filter(
+    bulletArrs = bulletArrs.filter(
       (bullet) => !idBulletsToKill.includes(bullet.bulletID)
     );
     //<< Убрали
 
     // Получаем bulletID оставшихся
-    const bulletArrsIDs = bulletArrs_3.map((bullet) => bullet.bulletID);
+    const bulletArrsIDs = bulletArrs.map((bullet) => bullet.bulletID);
+
+    // ---
+    // TODO
+    // Также получить массив id для bullets, которые нужно удалить
+    // ---
+
+    // ---
+    // clear memory
+    // ---
+    evnt = null;
+    data = null;
+    // <-
+
+    // ---
+    // test
+    // ---
+    // const dataToExport = {};
 
     // ---
     // to Export
@@ -140,7 +167,14 @@ export function mainWorker() {
     /* eslint-disable-next-line no-restricted-globals */
     self.postMessage({
       message: "ok",
-      payload: Object.assign({}, dataToExport),
+      payload: dataToExport,
     });
   };
+
+  /* eslint-disable-next-line no-restricted-globals */
+  // self.onmessage = (evnt) => {
+  /* eslint-disable-next-line no-restricted-globals */
+  // self.onmessage = () => {
+  //   // evnt = null;
+  // };
 }

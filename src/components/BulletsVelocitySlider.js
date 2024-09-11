@@ -5,6 +5,7 @@ import React from "react";
 import styled from "@emotion/styled";
 import Header from "./Header";
 import { useMainContext } from "../context/ContextProvider";
+import { fnBulletsFrequency } from "../lib";
 
 // ===
 // main
@@ -22,7 +23,7 @@ const BulletsVelocitySlider = function BulletsVelocitySlider(props) {
   // ---
   const onChangeHandler = (e) => {
     setVal(Number(e.target.value));
-    dispatcher.fnBulletsFrequency({
+    fnBulletsFrequency(dispatcher, {
       circleID: props.whois,
       newBulletsFrequency: e.target.value,
     });

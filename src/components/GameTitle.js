@@ -7,6 +7,7 @@ import { useMainContext } from "../context/ContextProvider";
 import { FaRegCirclePlay } from "react-icons/fa6";
 import styled from "@emotion/styled";
 import Header from "./Header";
+import { fnTransferHandlerToContext } from "../lib";
 
 // ===
 // main
@@ -16,7 +17,7 @@ const GameTitle = function GameTitle(props) {
   // ---
   // context
   // ---
-  const { dispatcher } = useMainContext();
+  const { ctxFns } = useMainContext();
 
   // ---
   // hanlder
@@ -29,11 +30,12 @@ const GameTitle = function GameTitle(props) {
   // effect
   // ---
   React.useEffect(() => {
-    dispatcher.fnTransferHandlerToContext("fnSetGameTitle", changeVisibility);
+    fnTransferHandlerToContext(ctxFns, "fnSetGameTitle", changeVisibility);
 
     return () => {
-      delete dispatcher["fnSetGameTitle"];
+      delete ctxFns["fnSetGameTitle"];
     };
+    // eslint-disable-next-line
   }, []);
 
   // ---
@@ -54,15 +56,21 @@ const GameTitle = function GameTitle(props) {
       }}
     >
       <Box className="GameTitleWrapper">
-        <Header hN={1} className="GameTitle_Header">
+        <StyledGameTitleHeader hN={1} className="GameTitle_Header">
           Дуэль Колобков
-        </Header>
-        <p className="GameTitle_Prompt">
+        </StyledGameTitleHeader>
+        {/* <p className="GameTitle_Prompt">
           Нажмите{" "}
           <span className="GameTitle_Icon">
             <FaRegCirclePlay />
           </span>
-        </p>
+        </p> */}
+        <StyledPrompt className="GameTitle_Prompt">
+          Нажмите{" "}
+          <span className="GameTitle_Icon">
+            <FaRegCirclePlay />
+          </span>
+        </StyledPrompt>
       </Box>
     </Box>
   );
@@ -98,6 +106,26 @@ const StyledGameTitle = styled(GameTitle)((props) => {
 
     "& .GameTitle_Icon": {
       transform: "translateY(2px)",
+    },
+  };
+});
+
+const StyledGameTitleHeader = styled(Header)(() => {
+  return {
+    "@media screen and (width > 1366px) and (620px < height < 768px)": {
+      "&.GameTitle_Header": {
+        fontSize: "6em",
+      },
+    },
+  };
+});
+
+const StyledPrompt = styled("p")(() => {
+  return {
+    "@media screen and (width > 1366px) and (620px < height < 768px)": {
+      "&.GameTitle_Prompt": {
+        fontSize: "2em",
+      },
     },
   };
 });

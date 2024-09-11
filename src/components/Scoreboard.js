@@ -7,6 +7,7 @@ import Header from "./Header";
 import Play from "./Play";
 import { useMainContext } from "../context/ContextProvider";
 import styled from "@emotion/styled";
+import { fnSetScoresTransfer } from "../lib";
 
 // ===
 // main
@@ -17,7 +18,7 @@ const Scoreboard = function Scoreboard(props) {
   // ---
   // context
   // ---
-  const { dispatcher } = useMainContext();
+  const { dispatcher, ctxFns } = useMainContext();
 
   // ---
   // handler
@@ -30,7 +31,8 @@ const Scoreboard = function Scoreboard(props) {
   // effects
   // ---
   React.useEffect(() => {
-    dispatcher.fnSetScoresTransfer(fnUpdateScores);
+    fnSetScoresTransfer(dispatcher, ctxFns, fnUpdateScores);
+    // eslint-disable-next-line
   }, []);
 
   // ---
@@ -39,15 +41,15 @@ const Scoreboard = function Scoreboard(props) {
   return (
     <Box className={`Scoreboard ${props.className}`}>
       {/* Left */}
-      <Header hN={3} className="ScoreboardHeaderMain">
+      <StyledHeader hN={3} className="ScoreboardHeaderMain">
         Поразил цель:
-      </Header>
+      </StyledHeader>
       <Box className="ScoreboardWrapper">
         <Box className="ScoreboardLeft">
           <Header hN={2} className="ScoreboardHeaderScores">
             {dispatcher.scores.left}
           </Header>
-          <Header hN={3}>Левый</Header>
+          <StyledHeader hN={3}>Левый</StyledHeader>
         </Box>
 
         {/* Play */}
@@ -58,7 +60,7 @@ const Scoreboard = function Scoreboard(props) {
           <Header hN={2} className="ScoreboardHeaderScores">
             {dispatcher.scores.right}
           </Header>
-          <Header hN={3}>Правый</Header>
+          <StyledHeader hN={3}>Правый</StyledHeader>
         </Box>
       </Box>
     </Box>
@@ -97,6 +99,14 @@ const StyledScoreboard = styled(Scoreboard)((props) => {
 
     "& .ScoreboardHeaderScores": {
       fontSize: "6em",
+    },
+  };
+});
+
+const StyledHeader = styled(Header)(() => {
+  return {
+    "@media screen and (width > 1366px) and (620px < height < 768px)": {
+      fontSize: "2em",
     },
   };
 });

@@ -3,11 +3,15 @@
 // ===
 import React from "react";
 import JSCircle from "../classes/JSCircle";
-// import { wrk } from "..";
 import { useMainContext } from "../context/ContextProvider";
 import { throttlify } from "../fns/throttlify";
-// import { createMousePosition } from "../fns/createMousePosition";
 import { animate } from "../fns/animate";
+import {
+  fnTransferFnToContext,
+  fnSetMousePosition,
+  fnSetIsClick,
+  fnSetClickPosition,
+} from "../lib";
 
 // ===
 // counters
@@ -25,7 +29,7 @@ function Canvas(props) {
   // ---
   // context
   // ---
-  const { dispatcher } = useMainContext();
+  const { dispatcher, ctxFns, ctxUtils } = useMainContext();
 
   // ---
   // refs
@@ -39,43 +43,41 @@ function Canvas(props) {
     isReadyToStart: false,
     isAnimated: false,
     initLock: false,
-  }); //<<
+  }); // **
 
   // ---
   // event handlers
   // ---
   const mouseMoveHandler = throttlify((event) => {
-    dispatcher.fnSetMousePosition(event.clientX, event.clientY);
+    fnSetMousePosition(dispatcher, event.clientX, event.clientY);
   });
 
   const mouseLeaveHandler = () => {
-    dispatcher.fnSetMousePosition(0, 0);
+    fnSetMousePosition(dispatcher, 0, 0);
   };
 
   const clickHandler = (event) => {
-    dispatcher.fnSetIsClick(true);
-    dispatcher.fnSetClickPosition(event.clientX, event.clientY);
+    fnSetIsClick(dispatcher, true);
+    fnSetClickPosition(dispatcher, event.clientX, event.clientY);
   };
 
   // ---
   // main run
   // ---
-  if (canvasRef.current) {
+  if (canvasRef.current && !localStore.current.initLock) {
+    localStore.current.initLock = true;
     const canvas = canvasRef.current;
     canvas.id = gCounters.canvas;
     gCounters.canvas++;
-    canvas.width = props.dim.width ? props.dim.width : undefined;
-    canvas.height = props.dim.height ? props.dim.height : undefined;
 
     const ctx = canvas.getContext("2d");
 
-    const maxX = canvas.width;
-    const maxY = canvas.height;
+    const maxX = dispatcher.maxX;
+    const maxY = dispatcher.maxY;
+    canvas.width = maxX;
+    canvas.height = maxY;
     const radius = 30;
     const number = 2;
-
-    localStore.current.maxX = maxX;
-    localStore.current.maxY = maxY;
 
     const circlesArr = [];
 
@@ -93,7 +95,7 @@ function Canvas(props) {
 
     // control animation
     if (localStore.current.isReadyToStart && !localStore.current.isAnimated) {
-      animate(ctx, circlesArr, maxX, maxY, dispatcher)();
+      animate(ctx, circlesArr, maxX, maxY, dispatcher, ctxUtils, ctxFns)();
       localStore.current.isAnimated = true;
       localStore.current.isReadyToStart = false;
     }
@@ -114,6 +116,22 @@ function Canvas(props) {
       }, 1000);
     })();
   }, [dispatcher.isPlay]);
+
+  /* Transfer fns to Context */
+  React.useEffect(() => {
+    if (canvasRef.current) {
+      fnTransferFnToContext(
+        ctxFns,
+        "fnCanvasDim",
+        (function fnCanvasDim(canvas) {
+          return (width, height) => {
+            canvas.width = width;
+            canvas.height = height;
+          };
+        })(canvasRef.current)
+      );
+    }
+  }, []);
 
   // ---
   // JSX

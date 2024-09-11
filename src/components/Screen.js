@@ -14,27 +14,10 @@ import GameTitle from "./GameTitle";
 // // main
 // // ===
 function ScreenWrapper(props) {
-  const [canvasDimensions, setCanvasDimensions] = React.useState({
-    width: undefined,
-    height: undefined,
-  });
-
   // ---
   // refs
   // ---
   const canvasWrapperRef = React.useRef(null);
-
-  // ---
-  // effects
-  // ---
-  React.useEffect(() => {
-    if (canvasWrapperRef.current) {
-      setCanvasDimensions({
-        width: canvasWrapperRef.current.clientWidth,
-        height: canvasWrapperRef.current.clientHeight,
-      });
-    }
-  }, []);
 
   // ---
   // JSX
@@ -50,7 +33,7 @@ function ScreenWrapper(props) {
           className="CanvasBlock"
           sx={{ width: "100%", height: "100%", position: "relative" }}
         >
-          <Canvas dim={canvasDimensions} />
+          <Canvas />
           <GameTitle />
         </Box>
         <ColorPicker />

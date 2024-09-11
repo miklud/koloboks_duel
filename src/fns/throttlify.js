@@ -6,7 +6,8 @@
 // ===
 // constants
 // ===
-const DURATION = 200;
+// const DURATION = 200;
+const DURATION = 10;
 
 // ===
 // pre-function

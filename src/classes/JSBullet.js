@@ -15,7 +15,6 @@ let bulletIDs = -1;
 // ===
 export default class JSBullet {
   // id: "left" | "right"
-
   constructor({ ctx, radius, id, maxX, maxY, bulletCoord, color }) {
     this.ctx = ctx;
     this.x =

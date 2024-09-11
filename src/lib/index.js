@@ -1,0 +1,17 @@
+export { fnBulletsFrequency } from "./fnBulletsFrequency";
+export { fnCircleVelocity } from "./fnCircleVelocity";
+export { fnCloseColorPicker } from "./fnCloseColorPicker";
+export { fnColorPickerOpen } from "./fnColorPickerOpen";
+export { fnSetCircleClickedID } from "./fnSetCircleClickedID";
+export { fnSetCircleVelocityChanged } from "./fnSetCircleVelocityChanged";
+export { fnSetClickPosition } from "./fnSetClickPosition";
+export { fnSetIsClick } from "./fnSetIsClick";
+export { fnSetIsColorChanged } from "./fnSetIsColorChanged";
+export { fnSetIsPause } from "./fnSetIsPause";
+export { fnSetIsPlay } from "./fnSetIsPlay";
+export { fnSetMousePosition } from "./fnSetMousePosition";
+export { fnSetScoresTransfer } from "./fnSetScoresTransfer";
+export { fnSetWinDimensions } from "./fnSetWinDimensions";
+export { fnTransferFnToContext } from "./fnTransferFnToContext";
+export { fnTransferHandlerToContext } from "./fnTransferHandlerToContext";
+export { fnAppDimensions } from "./fnAppDimensions";

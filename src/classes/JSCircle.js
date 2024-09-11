@@ -20,6 +20,9 @@ export default class JSCircle {
   static velocities = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   static bulletDelays = [1.5, 1, 0.7, 0.4, 0.2];
   static originRadius = 30;
+  static recharge(circle) {
+    window.setTimeout(() => (circle.isRecharged = true), circle.delay);
+  }
 
   constructor({ ctx, radius, id, maxX, maxY }) {
     this.ctx = ctx;
@@ -40,7 +43,7 @@ export default class JSCircle {
     this.isRecharged = true;
     this.delay = JSCircle.bulletDelays[2] * SEC;
 
-    this.timeout = this.timeout.bind(this);
+    // this.timeout = this.timeout.bind(this);
   }
 
   setPause() {
@@ -111,9 +114,7 @@ export default class JSCircle {
 
   timeout() {
     this.isRecharged = false;
-    window.setTimeout(() => {
-      this.isRecharged = true;
-    }, this.delay);
+    JSCircle.recharge(this);
   }
 
   randomBool() {

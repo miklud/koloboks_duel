@@ -7,6 +7,7 @@ import { useMainContext } from "../context/ContextProvider";
 import { FaRegCirclePlay } from "react-icons/fa6";
 import { FaRegCirclePause } from "react-icons/fa6";
 import styled from "@emotion/styled";
+import { fnSetIsPlay } from "../lib";
 
 // ===
 // constants
@@ -23,7 +24,7 @@ const Play = function Play(props) {
   // ---
   // context
   // ---
-  const { dispatcher } = useMainContext();
+  const { dispatcher, ctxFns } = useMainContext();
 
   // ---
   // hanlder
@@ -31,7 +32,8 @@ const Play = function Play(props) {
   const handleClick = () => {
     setIsPlay((old) => {
       const t = !old;
-      dispatcher.fnSetIsPlay(t);
+      // dispatcher.fnSetIsPlay(t);
+      fnSetIsPlay(dispatcher, ctxFns, t);
       return t;
     });
   };

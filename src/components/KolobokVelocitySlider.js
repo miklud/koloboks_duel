@@ -5,6 +5,7 @@ import React from "react";
 import styled from "@emotion/styled";
 import Header from "./Header";
 import { useMainContext } from "../context/ContextProvider";
+import { fnCircleVelocity } from "../lib";
 
 // ===
 // main
@@ -23,7 +24,7 @@ const KolobokVelocitySlider = function KolobokVelocitySlider(props) {
   const onChangeHandler = (e) => {
     setVal(e.target.value);
     window.setTimeout(() => {
-      dispatcher.fnCirlceVelocity({
+      fnCircleVelocity(dispatcher, {
         circleID: props.whois,
         newCircleVelocity: e.target.value,
       });

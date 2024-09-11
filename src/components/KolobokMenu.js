@@ -19,19 +19,22 @@ const KolobokMenu = function KolobokMenu(props) {
   // ---
   return (
     <Box
-      className={`${props.whois === "left" ? "Left" : "Right"}KolobokMenu ${
+      className={`${props.whois === "left" ? "Left-" : "Right-"}KolobokMenu ${
         props.className
       }`}
     >
-      <Header hN={2} sx={{ marginTop: "1em", marginBottom: "1em" }}>
+      <StyledKolobokMenuHeader
+        hN={2}
+        sx={{ marginTop: "1em", marginBottom: "1em" }}
+      >
         {kolobokName} Колобок
-      </Header>
-      <KolobokVelocitySlider
+      </StyledKolobokMenuHeader>
+      <StyledKolobokVelocitySlider
         sx={{ marginBottom: "3em" }}
         className={props.whois === "left" ? "LKM_KVS" : "RKM_KVS"}
         whois={props.whois}
       />
-      <BulletsVelocitySlider
+      <StyledBulletsVelocitySlider
         className={props.whois === "left" ? "LKM_BVS" : "RKM_BVS"}
         whois={props.whois}
       />
@@ -50,6 +53,34 @@ const StyledKolobokMenu = styled(KolobokMenu)((props) => {
     alignItems: "center",
     padding: "1em",
     color: "#343a40",
+  };
+});
+
+const StyledKolobokMenuHeader = styled(Header)(() => {
+  return {
+    "@media screen and (width > 1366px) and (620px < height < 768px)": {
+      fontSize: "2em",
+    },
+  };
+});
+
+const StyledKolobokVelocitySlider = styled(KolobokVelocitySlider)(() => {
+  return {
+    "@media screen and (width > 1366px) and (620px < height < 768px)": {
+      "& .KVS_title": {
+        fontSize: "1.5em",
+      },
+    },
+  };
+});
+
+const StyledBulletsVelocitySlider = styled(BulletsVelocitySlider)(() => {
+  return {
+    "@media screen and (width > 1366px) and (620px < height < 768px)": {
+      "& .BVS_title": {
+        fontSize: "1.5em",
+      },
+    },
   };
 });
 

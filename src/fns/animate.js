@@ -2,11 +2,26 @@
 // import
 // ===
 import { wrk } from "..";
+import {
+  fnSetIsColorChanged,
+  fnSetCircleVelocityChanged,
+  fnSetIsPause,
+  fnSetCircleClickedID,
+  fnSetIsClick,
+} from "../lib";
 
 // ===
 // main
 // ===
-export function animate(ctx, circlesArr, maxX, maxY, dispatcher) {
+export function animate(
+  ctx,
+  circlesArr,
+  maxX,
+  maxY,
+  dispatcher,
+  ctxUtils,
+  ctxFns
+) {
   const BULLET_RADIUS = 10;
   const KOLOBOK_RADIUS = 30;
   const CLOSENESS = 200;
@@ -27,9 +42,47 @@ export function animate(ctx, circlesArr, maxX, maxY, dispatcher) {
   let inPause = undefined; // {dy: number, delay: number}
   let tempStop = undefined; // {dy: number, id: "right" | "left"}
 
+  const oldCircleDim = {
+    width: maxX,
+    height: maxY,
+    ddX: 0,
+    ddY: 0,
+  };
+
+  let isCanvasDimChanged = false;
+
+  // ---
+  // _animationLoop
+  // ---
   function _animateLoop() {
-    ctx.clearRect(0, 0, maxX, maxY);
+    ctx.clearRect(0, 0, dispatcher.maxX, dispatcher.maxY);
+    isCanvasDimChanged = false;
+
+    // Если размеры 'canvas' изменились
+    if (oldCircleDim.width !== dispatcher.maxX) {
+      oldCircleDim.ddX = dispatcher.maxX - oldCircleDim.width;
+      oldCircleDim.width = dispatcher.maxX;
+    } else {
+      oldCircleDim.ddX = 0;
+    }
+
+    if (oldCircleDim.height !== dispatcher.maxY) {
+      oldCircleDim.ddY = dispatcher.maxY - oldCircleDim.height;
+      isCanvasDimChanged = true;
+      oldCircleDim.height = dispatcher.maxY;
+    } else {
+      oldCircleDim.ddY = 0;
+    }
+
     circlesArr.forEach((circle, index) => {
+      if (circle.id === "right") {
+        circle.x = circle.x + oldCircleDim.ddX;
+      }
+      circle.y = circle.y + oldCircleDim.ddY;
+      if (isCanvasDimChanged) {
+        circle.maxX = dispatcher.maxX;
+        circle.maxY = dispatcher.maxY;
+      }
       // Если пауза
       if (dispatcher.isPause) {
         if (!inPause) inPause = { bullets: {} };
@@ -56,7 +109,7 @@ export function animate(ctx, circlesArr, maxX, maxY, dispatcher) {
           circle.id === dispatcher.circleClickedID
         ) {
           circle.setBulletColor(dispatcher.circleClickedCurrentColor);
-          dispatcher.fnSetIsColorChanged(false);
+          fnSetIsColorChanged(dispatcher, false);
         }
       }
 
@@ -79,7 +132,7 @@ export function animate(ctx, circlesArr, maxX, maxY, dispatcher) {
       if (dispatcher.circleVelocityChanged) {
         if (circle.id === dispatcher.circleID) {
           circle.setVelocity(dispatcher.newCircleVelocity);
-          dispatcher.fnSetCircleVelocityChanged(false);
+          fnSetCircleVelocityChanged(dispatcher, false);
         }
       }
 
@@ -109,7 +162,7 @@ export function animate(ctx, circlesArr, maxX, maxY, dispatcher) {
         circle.dy = tempStop.dy;
         tempStop = undefined;
       }
-      //<< Столкновение закончилось
+      // ** Столкновение закончилось
 
       // Клик на Canvas?
       if (dispatcher.isClick) {
@@ -119,13 +172,13 @@ export function animate(ctx, circlesArr, maxX, maxY, dispatcher) {
           Math.sqrt(xDistance + yDistance) <= KOLOBOK_RADIUS * 2 + CLOSENESS;
 
         if (flag) {
-          dispatcher.fnColorPickerOpen(circle.id, circle.bulletColor);
-          dispatcher.fnSetIsPause(true);
-          dispatcher.fnSetCircleClickedID(circle.id);
+          ctxUtils.uColorPickerOpen(dispatcher, circle.id, circle.bulletColor);
+          fnSetIsPause(dispatcher, true);
+          fnSetCircleClickedID(dispatcher, circle.id);
           if (!inPause) inPause = { bullets: {} };
         }
         if (index === 1) {
-          dispatcher.fnSetIsClick(false);
+          fnSetIsClick(dispatcher, false);
         }
       }
 
@@ -204,13 +257,13 @@ export function animate(ctx, circlesArr, maxX, maxY, dispatcher) {
           message: "ok",
           payload: {
             bulletArrs: bulletArrsShalowCopy,
-            maxX,
-            maxY,
+            maxX: dispatcher.maxX,
+            maxY: dispatcher.maxY,
             BULLET_RADIUS,
             KOLOBOK_RADIUS,
             kolobokLeftXY,
             kolobokRightXY,
-            scores,
+            scores: Object.assign({}, scores),
           },
         };
         wrk.postMessage(dataToWorker);
@@ -218,20 +271,22 @@ export function animate(ctx, circlesArr, maxX, maxY, dispatcher) {
         // ---
         // From Worker
         // ---
-        let bulletArrsIDs = [];
         wrk.onmessage = (evnt) => {
-          const result = evnt.data;
+          const result = window.structuredClone(evnt.data);
 
           if (result.message !== "ok") throw new Error();
 
-          bulletArrsIDs = result.payload.bulletArrsIDs;
+          const bulletArrsIDs = result.payload.bulletArrsIDs.slice();
           const scoresLeft = result.payload.scores.left;
           const scoresRight = result.payload.scores.right;
           scores.leftChanged = scoresLeft !== scores.left;
           scores.rightChanged = scoresRight !== scores.right;
-          // if (scoresLeft !== scores.left || scoresRight !== scores.right) {
+
           if (scores.leftChanged || scores.rightChanged) {
-            dispatcher.fnSetScores({ left: scoresLeft, right: scoresRight });
+            ctxFns.fnSetScores({
+              left: scoresLeft,
+              right: scoresRight,
+            });
             scores.scoresChanged = true;
           }
           scores.left = scoresLeft;
@@ -241,7 +296,7 @@ export function animate(ctx, circlesArr, maxX, maxY, dispatcher) {
             bulletArrsIDs.includes(bullet.bulletID)
           );
         };
-        //<< Worker
+        /// Worker
       }
     }
 
